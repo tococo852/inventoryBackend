@@ -1,0 +1,24 @@
+{
+  "name": "inventorybackend",
+  "version": "1.0.0",
+  "description": "express backend",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node --watch --env-file=.env app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tococo852/inventoryBackend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tococo852/inventoryBackend/issues"
+  },
+  "homepage": "https://github.com/tococo852/inventoryBackend#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "pg": "^8.20.0"
+  }
+}
