@@ -23,5 +23,5 @@ app.listen(PORT, (error)=>{
 
 app.use ((err,req,res,next)=>{
     console.error(err)
-    res.status(err.statusCode || 500).send(err.mesage)
+    res.status(err.statusCode || 500).send(err.message)
 })

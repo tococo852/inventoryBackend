@@ -16,14 +16,14 @@ const itemsController = {
     res.json({ message: "Item added" })
   },
   async update(req, res) {
-    const { id } = req.params
+    const { item_id } = req.params
     const { name, category_id, barcode } = req.body
-    await items.update(id, name, category_id, barcode)
+    await items.update(item_id, name, category_id, barcode)
     res.json({ message: "Item updated" })
   },
   async delete(req, res) {
-    const { id } = req.params
-    await items.delete(id)
+    const { item_id } = req.params
+    await items.delete(item_id)
     res.json({ message: "Item deleted" })
   }
 }
