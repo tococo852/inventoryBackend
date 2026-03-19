@@ -11,16 +11,16 @@ const itemsController = {
     res.json(data)
   },
   async add(req, res) {
-    const { name, barcode, category_id } = req.body
-    await items.add(name, category_id, barcode)
-    res.json({ message: "Item added" })
-  },
-  async update(req, res) {
-    const { item_id } = req.params
-    const { name, category_id, barcode } = req.body
-    await items.update(item_id, name, category_id, barcode)
+  const { name, barcode, category_id, price, description, image_url, quantity, stock, measure_id } = req.body
+  await items.add(name, category_id, barcode, price, description, image_url, quantity, stock, measure_id)
+  res.json({ message: "Item added" })
+    },
+    async update(req, res) {
+    const { id } = req.params
+    const { name, category_id, barcode, price, description, image_url, quantity, stock, measure_id } = req.body
+    await items.update(id, name, category_id, barcode, price, description, image_url, quantity, stock, measure_id)
     res.json({ message: "Item updated" })
-  },
+    },
   async delete(req, res) {
     const { item_id } = req.params
     await items.delete(item_id)

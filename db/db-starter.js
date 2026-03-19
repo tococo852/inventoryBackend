@@ -6,11 +6,22 @@ CREATE TABLE IF NOT EXISTS categories(
     name VARCHAR (255)
 );
 
+CREATE TABLE IF NOT EXISTS measures (
+  id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  measure VARCHAR(255)
+);
+
 CREATE TABLE IF NOT EXISTS items (
   id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  name VARCHAR ( 255 ),
+  name VARCHAR(255),
   category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
-  barcode VARCHAR ( 255 )
+  barcode VARCHAR(255),
+  price INTEGER,
+  description VARCHAR(255),
+  image_url VARCHAR(255),
+  quantity NUMERIC,
+  stock NUMERIC,
+  measure_id INTEGER REFERENCES measures(id) ON DELETE SET NULL
 );
 `;
 

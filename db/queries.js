@@ -11,18 +11,18 @@ const items = {
     return rows
   }
   ,
-  async add(name, category_id, barcode) {
+  async add(name, category_id, barcode, price, description, image_url, quantity, stock, measure_id) {
+  await pool.query(
+    'INSERT INTO items (name, category_id, barcode, price, description, image_url, quantity, stock, measure_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+    [name, category_id, barcode, price, description, image_url, quantity, stock, measure_id]
+  )
+    },
+    async update(item_id, name, category_id, barcode, price, description, image_url, quantity, stock, measure_id) {
     await pool.query(
-      'INSERT INTO items (name, category_id, barcode) VALUES ($1, $2, $3)',
-      [name, category_id, barcode]
+        'UPDATE items SET name=$1, category_id=$2, barcode=$3, price=$4, description=$5, image_url=$6, quantity=$7, stock=$8, measure_id=$9 WHERE id=$10',
+        [name, category_id, barcode, price, description, image_url, quantity, stock, measure_id, item_id]
     )
-  },
-  async update(item_id, name, category_id, barcode) {
-    await pool.query(
-      'UPDATE items SET name = $1, category_id = $2, barcode = $3 WHERE id = $4',
-      [name, category_id, barcode, item_id]
-    )
-  },
+    },
   async delete(item_id) {
     await pool.query('DELETE FROM items WHERE id = $1', [item_id])
   }
@@ -48,4 +48,35 @@ const categories = {
   }
 }
 
-module.exports={items,categories}
+const measures = {
+  async getAll() {
+    const { rows } = await pool.query('SELECT * FROM measures')
+    return rows
+  },
+  async getOne(measure_id) {
+    const { rows } = await pool.query('SELECT * FROM measures WHERE id = $1', [measure_id])
+    return rows
+  },
+  async add(measure) {
+    await pool.query('INSERT INTO measures (measure) VALUES ($1)', [measure])
+  },
+  async editName(measure_id, measure) {
+    await pool.query('UPDATE measures SET measure = $1 WHERE id = $2', [measure, measure_id])
+  },
+  async delete(measure_id) {
+    await pool.query('DELETE FROM measures WHERE id = $1', [measure_id])
+  }
+}
+
+const catalog ={
+    async getCatalog(){
+        const {rows}= await pool.query(`
+            SELECT items.id, items.name, categories.name as category, barcode, price, description, image_url, quantity, stock, measures.measure as measure FROM items
+            LEFT JOIN categories ON categories.id=items.category_id
+            LEFT JOIN measures ON measures.id=items.measure_id
+            `)
+        return rows
+    }
+}
+
+module.exports={items,categories,measures, catalog}
