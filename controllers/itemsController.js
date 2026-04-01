@@ -1,4 +1,5 @@
 const {items} = require('../db/queries')
+const {EAN13BarcodeGen} = require('../functions/barcodeGeneration')
 
 const itemsController = {
   async getAll(req, res) {
@@ -12,13 +13,18 @@ const itemsController = {
   },
   async add(req, res) {
   const { name, barcode, category_id, price, description, image_url, quantity, stock, measure_id } = req.body
+  
   await items.add(name, category_id, barcode, price, description, image_url, quantity, stock, measure_id)
   res.json({ message: "Item added" })
     },
-    async update(req, res) {
-    const { id } = req.params
+  async update(req, res) {
+    const { item_id } = req.params
     const { name, category_id, barcode, price, description, image_url, quantity, stock, measure_id } = req.body
-    await items.update(id, name, category_id, barcode, price, description, image_url, quantity, stock, measure_id)
+    
+    const barcodeUpdate = barcode==='' ? EAN13BarcodeGen('223',category_id,item_id):barcode
+    console.log(barcodeUpdate)
+
+    await items.update(item_id, name, category_id, barcode, price, description, image_url, quantity, stock, measure_id)
     res.json({ message: "Item updated" })
     },
   async delete(req, res) {

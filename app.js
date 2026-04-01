@@ -8,6 +8,7 @@ const cors = require('cors')
 const path = require("node:path")
 const { error } = require('node:console')
 
+
 app.use(express.json())
 
 app.use(cors())
