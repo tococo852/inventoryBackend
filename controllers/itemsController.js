@@ -20,11 +20,12 @@ const itemsController = {
   async update(req, res) {
     const { item_id } = req.params
     const { name, category_id, barcode, price, description, image_url, quantity, stock, measure_id } = req.body
+
     
-    const barcodeUpdate = barcode==='' ? EAN13BarcodeGen('223',category_id,item_id):barcode
+    const barcodeUpdate = barcode===null ? EAN13BarcodeGen('223',category_id,item_id):barcode
     console.log(barcodeUpdate)
 
-    await items.update(item_id, name, category_id, barcode, price, description, image_url, quantity, stock, measure_id)
+    await items.update(item_id, name, category_id, barcodeUpdate, price, description, image_url, quantity, stock, measure_id)
     res.json({ message: "Item updated" })
     },
   async delete(req, res) {
