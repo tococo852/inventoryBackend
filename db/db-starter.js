@@ -23,6 +23,13 @@ CREATE TABLE IF NOT EXISTS items (
   stock NUMERIC,
   measure_id INTEGER REFERENCES measures(id) ON DELETE SET NULL
 );
+
+CREATE TABLE users (
+   id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+   username VARCHAR ( 255 ),
+   password VARCHAR ( 255 )
+);
+
 `;
 
 async function main() {

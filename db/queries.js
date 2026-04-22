@@ -79,4 +79,29 @@ const catalog ={
     }
 }
 
-module.exports={items,categories,measures, catalog}
+const users = {
+  async getAll() {
+    const {rows} = await pool.query ('SELECT * FROM users')
+    return rows
+  },
+  async getPassword(username) {
+    const {rows} = await pool.query ('SELECT password FROM users WHERE username = LOWER( $1 )',[username])
+    return rows
+  },
+  /*async getUser(username) {
+    const {rows} = await pool.query ('SELECT username FROM users WHERE username = LOWER( $1 )',[username])
+    return rows
+  },*/
+  async add(username,password) {
+    await pool.query('INSERT INTO users (username,password) VALUES (LOWER($1), $2)',[username,password])
+  },
+  async editPassword(password,username) {
+    await pool.query('UPDATE users SET password = $1 WHERE username=LOWER($2)', [password,username])
+  },
+  async delete(username) {
+    await pool.query('DELETE FROM users WHERE username = LOWER($1)', [username])
+  }
+}
+
+
+module.exports={items,categories,measures, catalog,users}
