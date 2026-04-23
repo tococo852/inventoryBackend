@@ -81,7 +81,7 @@ const catalog ={
 
 const users = {
   async getAll() {
-    const {rows} = await pool.query ('SELECT * FROM users')
+    const {rows} = await pool.query ('SELECT username FROM users')
     return rows
   },
   async getPassword(username) {
@@ -95,7 +95,7 @@ const users = {
   async add(username,password) {
     await pool.query('INSERT INTO users (username,password) VALUES (LOWER($1), $2)',[username,password])
   },
-  async editPassword(password,username) {
+  async editPassword(username,password) {
     await pool.query('UPDATE users SET password = $1 WHERE username=LOWER($2)', [password,username])
   },
   async delete(username) {

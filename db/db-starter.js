@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS items (
 
 CREATE TABLE users (
    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-   username VARCHAR ( 255 ),
+   username VARCHAR ( 255 ) UNIQUE,
    password VARCHAR ( 255 )
 );
 

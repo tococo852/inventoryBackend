@@ -12,7 +12,7 @@ const usersController = {
   },
   async update(req, res) {
     const { username, password } = req.body
-    await users.editPassword(password,username)
+    await users.editPassword(username,password)
     res.json({ message: "password Updated" })
   },
   async add(req, res) {
