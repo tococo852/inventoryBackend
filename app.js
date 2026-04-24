@@ -4,12 +4,12 @@ const categoriesRouter=require('./routers/categoriesRouter')
 const itemsRouter=require('./routers/itemsRouter')
 const measuresRouter= require('./routers/measuresRouter')
 const catalogRouter= require('./routers/catalogRouter')
-const loginController= require('./controllers/loginController')
+const loginRouter= require('./routers/loginRouter')
 const cors = require('cors')
 const path = require("node:path")
 const { error } = require('node:console')
 const passport = require("passport");
-const { usersController } = require('./controllers/usersController')
+const  usersRouter  = require('./routers/usersRouter')
 const LocalStrategy = require('passport-local').Strategy;
 
 app.use(express.json())
@@ -19,8 +19,8 @@ app.use('/items',itemsRouter)
 app.use('/categories',categoriesRouter)
 app.use('/measures', measuresRouter)
 app.use('/catalog',catalogRouter)
-app.use('/user',usersController)
-app.use('/login', loginController)
+app.use('/user',usersRouter)
+app.use('/login', loginRouter)
 
 const PORT = process.env.APP_PORT
 
