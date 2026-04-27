@@ -15,12 +15,13 @@ const LocalStrategy = require('passport-local').Strategy;
 app.use(express.json())
 
 app.use(cors())
+app.use('/login', loginRouter)
+
 app.use('/items',itemsRouter)
 app.use('/categories',categoriesRouter)
 app.use('/measures', measuresRouter)
 app.use('/catalog',catalogRouter)
 app.use('/user',usersRouter)
-app.use('/login', loginRouter)
 
 const PORT = process.env.APP_PORT
 

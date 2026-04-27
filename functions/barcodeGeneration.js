@@ -18,8 +18,6 @@ const generateEanCheckDigit = (barcode) => {
 
   for (let i = 0; i < 12; i++) {
     const digit = parseInt(barcode[i], 10);
-    // EAN-13 weights: Even indices (0, 2, 4...) get weight 1
-    // Odd indices (1, 3, 5...) get weight 3
     const weight = i % 2 === 0 ? 1 : 3;
     sum += digit * weight;
   }
@@ -28,7 +26,6 @@ const generateEanCheckDigit = (barcode) => {
   return String(remainder === 0 ? 0 : 10 - remainder);
 };
 
-//prefix expects a 3 digit prefix for the code
 const EAN13BarcodeGen =(prefix,category_id,item_id)=>{
     const categoryNumber= digitGenerator(4,category_id ? category_id : 0)
     const itemNumber = digitGenerator(5, item_id)
