@@ -4,7 +4,9 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const loginController ={
      async login(req,res){
-        const {password}= await users.getPassword(req.body.username)
+        const data= await users.getPassword(req.body.username)
+        const {password} = data[0]
+        console.log(password)
         if (!password) return res.status(401).json({message: 'username or password incorrect'})
         const  match = await bcrypt.compare(req.body.password, password)
         if(match){

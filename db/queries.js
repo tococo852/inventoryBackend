@@ -87,6 +87,7 @@ const users = {
   async getPassword(username) {
     const {rows} = await pool.query ('SELECT password FROM users WHERE username = LOWER( $1 )',[username])
     return rows
+
   },
   /*async getUser(username) {
     const {rows} = await pool.query ('SELECT username FROM users WHERE username = LOWER( $1 )',[username])
