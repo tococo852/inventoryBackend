@@ -30,6 +30,7 @@ const itemsController = {
     },
   async delete(req, res) {
     const { item_id } = req.params
+    console.log(item_id)
     await items.delete(item_id)
     res.json({ message: "Item deleted" })
   }
