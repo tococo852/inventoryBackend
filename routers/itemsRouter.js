@@ -7,7 +7,7 @@ itemsRouter.get('/',auth,itemsController.getAll)
 itemsRouter.get('/:item_id',itemsController.getOne)
 itemsRouter.post('/',auth,itemsController.add)
 itemsRouter.put('/:item_id',auth,itemsController.update)
-itemsRouter.delete('/:items_id',auth,itemsController.delete)
+itemsRouter.delete('/:item_id',auth,itemsController.delete)
 
 
 module.exports=itemsRouter
