@@ -32,7 +32,7 @@ app.use('/categories',categoriesRouter)
 app.use('/measures', measuresRouter)
 app.use('/catalog',catalogRouter)
 
-const PORT = process.env.APP_PORT
+const PORT = process.env.PORT || process.env.APP_PORT || 3000
 
 app.listen(PORT, (error)=>{
     if(error){
