@@ -25,7 +25,9 @@ app.use(limiter)
 //app.use('/user',usersRouter)
 app.use('/login',rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 15,
+  max: 7,
+  message: 'Too many login attempts, please try again later.',
+
 }), loginRouter)
 app.use('/items',itemsRouter)
 app.use('/categories',categoriesRouter)
