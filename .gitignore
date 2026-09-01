@@ -1,3 +1,5 @@
 .env
 node_modules
 testData.txt
+/generated/prisma
+script.js
