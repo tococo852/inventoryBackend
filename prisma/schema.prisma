@@ -7,50 +7,48 @@ datasource db {
   provider = "postgresql"
 }
 
-model Category {
-  id                  Int                   @id @default(autoincrement())
-  name                String?               @db.VarChar(255)
-  ItemFamily_Category ItemFamily_Category[]
+
+
+model Item {
+  id          Int          @id @default(autoincrement())
+  name        String?      @db.VarChar(255)
+  family_id   Int?
+  measure_id  Int?
+  barcode     String?      @db.VarChar(255)
+  price       Int?
+  description String?      @db.VarChar(255)
+  image_url   String?      @db.VarChar(255)
+  quantity    Decimal?     @db.Decimal
+  stock       Decimal?     @db.Decimal
+  ItemFamily  ItemFamily?  @relation(fields: [family_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  MeasureUnit MeasureUnit? @relation(fields: [measure_id], references: [id], onUpdate: NoAction)
+  Variant     Variant[]
+}
+
+model Variant {
+  id               Int           @id @default(autoincrement())
+  variant_group_id Int
+  name             String?       @db.VarChar(255)
+  Item             Item[]
+  VariantGroup     VariantGroup? @relation(fields: [variant_group_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model ItemFamily {
-  id                  Int                   @id @default(autoincrement())
-  name                String?               @db.VarChar(255)
-  Item                Item[]
-  ItemFamily_Category ItemFamily_Category[]
+  id         Int        @id @default(autoincrement())
+  name       String?    @db.VarChar(255)
+  image_url  String?    @db.VarChar(255)
+  display    Boolean    @default(true)
+  Item       Item[]
+  Category   Category[]
 }
 
-model Item {
-  id           Int            @id @default(autoincrement())
-  name         String?        @db.VarChar(255)
-  family_id    Int?
-  measure_id   Int?
-  barcode      String?        @db.VarChar(255)
-  price        Int?
-  description  String?        @db.VarChar(255)
-  image_url    String?        @db.VarChar(255)
-  quantity     Decimal?       @db.Decimal
-  stock        Decimal?       @db.Decimal
-  ItemFamily   ItemFamily?    @relation(fields: [family_id], references: [id], onUpdate: NoAction)
-  MeasureUnit  MeasureUnit?   @relation(fields: [measure_id], references: [id], onUpdate: NoAction)
-  Item_Variant Item_Variant[]
+
+model Category {
+  id         Int          @id @default(autoincrement())
+  name       String?      @db.VarChar(255)
+  ItemFamily ItemFamily[]
 }
 
-model ItemFamily_Category {
-  id             Int         @id @default(autoincrement())
-  item_family_id Int?
-  category_id    Int?
-  Category       Category?   @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  ItemFamily     ItemFamily? @relation(fields: [item_family_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-}
-
-model Item_Variant {
-  id         Int      @id @default(autoincrement())
-  variant_id Int?
-  item_id    Int?
-  Item       Item?    @relation(fields: [item_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  Variant    Variant? @relation(fields: [variant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-}
 
 model MeasureUnit {
   id      Int     @id @default(autoincrement())
@@ -60,7 +58,7 @@ model MeasureUnit {
 
 model User {
   id       Int     @id @default(autoincrement())
-  username String? @unique @db.VarChar(255)
+  username String  @unique @db.VarChar(255)
   password String? @db.VarChar(255)
 }
 
@@ -70,10 +68,3 @@ model VariantGroup {
   Variant Variant[]
 }
 
-model Variant {
-  id               Int            @id @default(autoincrement())
-  variant_group_id Int?
-  name             String?        @db.VarChar(255)
-  Item_Variant     Item_Variant[]
-  VariantGroup     VariantGroup?  @relation(fields: [variant_group_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-}

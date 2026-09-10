@@ -5,6 +5,8 @@ const itemsRouter=require('./routers/itemsRouter')
 const measuresRouter= require('./routers/measuresRouter')
 const catalogRouter= require('./routers/catalogRouter')
 const loginRouter= require('./routers/loginRouter')
+const variantGroupRouter= require('./routers/variantGroupRouter')
+const variantRouter= require('./routers/variantRouter')
 const cors = require('cors')
 const path = require("node:path")
 const { error } = require('node:console')
@@ -33,6 +35,10 @@ app.use('/items',itemsRouter)
 app.use('/categories',categoriesRouter)
 app.use('/measures', measuresRouter)
 app.use('/catalog',catalogRouter)
+app.use('/variantGroup',variantGroupRouter)
+app.use('/variant',variantRouter)
+
+
 
 const PORT = process.env.PORT || process.env.APP_PORT || 3000
 
