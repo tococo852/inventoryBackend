@@ -8,14 +8,15 @@ const variantController = {
   },
   async getOne(req, res) {
     const { variant_id } = req.params
-    const data = await variant.getOne(variant_id)
+    const id = checkId(variant_id)
+    const data = await variant.getOne(id)
     res.json(data)
   },
   async update(req, res) {
     const { variant_id } = req.params
     const id = checkId(variant_id)
     const { name } = req.body
-    await variant.editName(id, name)
+    await variant.update(id, name)
     res.json({ message: "variant Updated" })
   },
   async add(req, res) {

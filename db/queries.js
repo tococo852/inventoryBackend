@@ -61,9 +61,7 @@ async add(name, barcode, price, description, image_url, quantity, stock, measure
     family_id = newFamily.id;
   }
 
-  const itemData = { name, barcode, description, image_url, quantity, stock, measure_id, price,  
-    
-   };
+  const itemData = { name, barcode, description, image_url, quantity, stock, measure_id, price};
 
   if (variant_list) {
     const existingItems = await prisma.item.findMany({
@@ -328,6 +326,12 @@ const itemFamily={
     await prisma.itemFamily.update({where:{id:family_id},data:{ItemFamily_Category:{
       connect:{id:category_id}
     }}})
+  },
+
+  async getAll(){
+    const itemFamilies= await prisma.itemFamily.findMany()
+    return itemFamilies
+      
   }
 
 }

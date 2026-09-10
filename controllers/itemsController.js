@@ -1,22 +1,24 @@
-const {items} = require('../db/queries')
+const {items,itemFamily} = require('../db/queries')
 const {EAN13BarcodeGen} = require('../functions/barcodeGeneration')
 const {getPublicId}=require('../functions/getPublicId')
 const cloudinary = require('../cloudinaryConfig')
+const {checkId} = require('../functions/checkId')
 
 const itemsController = {
   async getAll(req, res) {
     const data = await items.getAll()
     res.json(data)
-  },  
+  },
   async getOne(req, res) {
     const {item_id}=req.params
     const data = await items.getOne(item_id)
     res.json(data)
   },
   async add(req, res) {
-  const { name, barcode, category_id, price, description, image_url, quantity, stock, measure_id } = req.body
+    console.log('request arrived')
+  const { name, barcode, price, description, image_url, quantity, stock, measure_id,variant_list } = req.body
   
-  await items.add(name, category_id, barcode, price, description, image_url, quantity, stock, measure_id)
+  await items.add(name, barcode, price, description, image_url, quantity, stock, Number(measure_id),null,variant_list)
   res.json({ message: "Item added" })
     },
   async update(req, res) {

@@ -7,6 +7,7 @@ const catalogRouter= require('./routers/catalogRouter')
 const loginRouter= require('./routers/loginRouter')
 const variantGroupRouter= require('./routers/variantGroupRouter')
 const variantRouter= require('./routers/variantRouter')
+const itemsFamilyRouter= require('./routers/itemFamilyRouter')
 const cors = require('cors')
 const path = require("node:path")
 const { error } = require('node:console')
@@ -35,8 +36,10 @@ app.use('/items',itemsRouter)
 app.use('/categories',categoriesRouter)
 app.use('/measures', measuresRouter)
 app.use('/catalog',catalogRouter)
-app.use('/variantGroup',variantGroupRouter)
-app.use('/variant',variantRouter)
+app.use('/variantGroups',variantGroupRouter)
+app.use('/variants',variantRouter)
+app.use('/itemFamilies',itemsFamilyRouter)
+
 
 
 

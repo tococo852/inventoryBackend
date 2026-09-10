@@ -21,7 +21,7 @@ const cartesianProduct=( listoflist, c=0, currId=[], totalId=[])=>{
 
   for (let i=0; i < listoflist[c].length; i++) {
     currId.push(listoflist[c][i])
-    recList(listoflist,c+1, currId,totalId)
+    cartesianProduct(listoflist,c+1, currId,totalId)
     currId.pop()
     
   }

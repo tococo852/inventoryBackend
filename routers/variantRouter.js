@@ -5,8 +5,8 @@ const auth = require( '../middleware/auth')
 
 variantRouter.get('/', variantController.getAll)
 variantRouter.get('/:variant_id', variantController.getOne)
-variantRouter.post('/:parent_id', variantController.add)
-variantRouter.put('/:variant_id', variantController.update)
-variantRouter.delete('/:variant_id', variantController.delete)
+variantRouter.post('/:parent_id',auth, variantController.add)
+variantRouter.put('/:variant_id',auth, variantController.update)
+variantRouter.delete('/:variant_id',auth, variantController.delete)
 
 module.exports = variantRouter

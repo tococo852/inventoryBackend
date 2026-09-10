@@ -7,8 +7,10 @@ const cloudinaryUpload= require('../middleware/cloudinaryUpload')
 
 itemsRouter.get('/',itemsController.getAll)
 itemsRouter.get('/:item_id',itemsController.getOne)
-itemsRouter.post('/',auth,upload.single('img_file'),cloudinaryUpload,itemsController.add)
-itemsRouter.put('/:item_id',auth,upload.single('img_file'),cloudinaryUpload,auth,itemsController.update)
+//itemsRouter.post('/',auth,upload.single('img_file'),cloudinaryUpload,itemsController.add)
+itemsRouter.post('/',auth,itemsController.add)
+//itemsRouter.put('/:item_id',auth,upload.single('img_file'),cloudinaryUpload,auth,itemsController.update)
+itemsRouter.put('/:item_id',auth,itemsController.update)
 itemsRouter.delete('/:item_id',auth,itemsController.delete)
 
 
