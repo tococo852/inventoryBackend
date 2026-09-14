@@ -1,4 +1,5 @@
 //const pool = require('./pool')
+const { isDbNull } = require('@prisma/client/runtime/client');
 const { cartesianProduct } = require('../functions/cartesianProduct');
 const { prisma } = require('../lib/prisma');
 
@@ -6,13 +7,16 @@ const { prisma } = require('../lib/prisma');
 
 const items = {
   async getAll() {
-    const items = await prisma.item.findMany()
+    const items = await prisma.item.findMany({include:{Variant:true}})
     return items
   },
   async getOne(item_id){
     const item = await prisma.item.findUnique({
       where:{
         id:item_id
+      },
+      include:{
+        Variant:true
       }
     })
     return item
@@ -20,10 +24,27 @@ const items = {
   ,
   //variantlist
   /*expected shape: 
-  variant_list : [
-    {variant_parent: variant_family_id, varint_choices:[variant_id,variant_id]},
-    ...,
-    {variant_family_id, [variant_id,variant_id]}
+  //list of variant parents with the chosen variants
+"variant_list":[
+    //each member of the list is a parent, and inside it contains the chosen variants
+    //this case parent id 2, contains variant id1 and id3 as chosen to create 
+    {"variant_parent":2,
+    "variant_choices":[{
+      "id":1, "name":"8x15"
+      },
+      {"id":3,
+        "name":"10x20"
+      }
+      ]
+    },
+
+    {
+      "variant_parent":4,
+      "variant_choices":[
+        {"id":5, "name":"azul"},
+        {"id":6,"name":"rojo"}
+        ]
+    }
     ]
 
   if there is a variant list, run a map on it, using the data from the map
@@ -58,10 +79,11 @@ async add(name, barcode, price, description, image_url, quantity, stock, measure
     const newFamily = await prisma.itemFamily.create({
       data: { name: `${name} y Variaciones`, image_url }
     });
+
     family_id = newFamily.id;
   }
 
-  const itemData = { name, barcode, description, image_url, quantity, stock, measure_id, price};
+  const itemData = { name, barcode, description, image_url, quantity, stock, measure_id, price, family_id};
 
   if (variant_list) {
     const existingItems = await prisma.item.findMany({
@@ -74,8 +96,13 @@ async add(name, barcode, price, description, image_url, quantity, stock, measure
         item.Variant.map(v => v.id).sort().join('-')
       )
     );
-
-    const listOfLists = variant_list.map(v => v.variant_choices);
+    const IDnames={}
+    const listOfLists = variant_list.map(varGroup => 
+      varGroup.variant_choices.map(varChoice=> 
+        {
+          IDnames[varChoice.id]=varChoice.name
+          return varChoice.id
+        }));
     const combinations = cartesianProduct(listOfLists);
 
     const newCombinations = combinations.filter(combi => {
@@ -83,16 +110,20 @@ async add(name, barcode, price, description, image_url, quantity, stock, measure
       return !existingSignatures.has(signature);
     });
 
+
+
     await Promise.all(
-      newCombinations.map(combi =>
-        prisma.item.create({
+      newCombinations.map(combi =>{
+          
+          return prisma.item.create({
           data: {
             ...itemData,
-            Variant: {
+              name:`${itemData.name}${combi.reduce((extraNames, id)=>extraNames+` ${IDnames[id]}`,'')}`,
+              Variant: {
               connect: combi.map(variant_id => ({ id: variant_id }))
             }
           }
-        })
+        })}
       )
     );
 
@@ -332,6 +363,30 @@ const itemFamily={
     const itemFamilies= await prisma.itemFamily.findMany()
     return itemFamilies
       
+  },
+  async getOne(family_id){
+    const itemFamily= await prisma.itemFamily.findUnique({where:{id:family_id}, include:{
+      _count:{
+            select:{
+              Item:true
+            }
+          },
+          Item:{
+            select:{
+              id:true,
+              name:true,
+              Variant:true
+            }
+          }
+        
+        }
+      })
+    return itemFamily
+  },
+  async delete(family_id){
+    const deletedFamily = await prisma.itemFamily.delete({where:{id:family_id}})
+    return deletedFamily
+
   }
 
 }

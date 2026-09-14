@@ -11,7 +11,8 @@ const itemsController = {
   },
   async getOne(req, res) {
     const {item_id}=req.params
-    const data = await items.getOne(item_id)
+    const id = checkId(item_id)
+    const data = await items.getOne(id)
     res.json(data)
   },
   async add(req, res) {
@@ -23,17 +24,19 @@ const itemsController = {
     },
   async update(req, res) {
     const { item_id } = req.params
+    const id = checkId(item_id)
     const { name, category_id, barcode, price, description, image_url, quantity, stock, measure_id } = req.body
     const barcodeUpdate = !barcode ? EAN13BarcodeGen('223', category_id, item_id) : barcode
-    await items.update(item_id, name, category_id, barcodeUpdate, price, description, image_url, quantity, stock, measure_id)
+    await items.update(id, name, category_id, barcodeUpdate, price, description, image_url, quantity, stock, measure_id)
     res.json({ message: "Item updated" })
     },
   async delete(req, res) {
     const { item_id } = req.params
-    const data = await items.getOne(item_id)
-    const url = data[0].image_url
-    if (url && url !='') await cloudinary.uploader.destroy(getPublicId(url))
-    await items.delete(item_id)
+    const id = checkId(item_id)
+    const data = await items.getOne(id)
+    //const url = data.image_url
+    //if (url && url !='') await cloudinary.uploader.destroy(getPublicId(url))
+    await items.delete(id)
     res.json({ message: "Item deleted" })
   }
 }
