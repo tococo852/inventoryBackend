@@ -85,6 +85,7 @@ async add(name, barcode, price, description, image_url, quantity, stock, measure
 
   const itemData = { name, barcode, description, image_url, quantity, stock, measure_id, price, family_id};
 
+  
   if (variant_list) {
     const existingItems = await prisma.item.findMany({
       where: { family_id },
@@ -137,9 +138,39 @@ async add(name, barcode, price, description, image_url, quantity, stock, measure
   return { message: 'added' };
 },
 
-    async update(item_id, name, category_id, barcode, price, description, image_url, quantity, stock, measure_id, family_id) {
-      const itemData= { name, category_id, barcode, price, description, image_url, quantity, stock, measure_id, family_id}
+    async updateNewVariants(name, category_id, barcode, price, description, image_url, quantity, stock, measure_id, family_id,variant_List) {
+      //const itemData= { name, category_id, barcode, price, description, image_url, quantity, stock, measure_id, family_id}
 
+      const variantGroups = await prisma.variant.findMany({
+            where: {
+              Item: {
+                some: {
+                  family_id
+                }
+              }
+            },
+            distinct: ['variant_group_id'],
+            select: {
+              variant_group_id: true
+            }
+          })
+
+      const count = variantGroups.length
+
+      if(count == variant_List.length){
+        await this.add(name, category_id, barcode, price, description, image_url, quantity, stock, measure_id, family_id,variant_List)
+      }
+      else{
+        await prisma.item.deleteMany({where:{
+          family_id
+        }})
+        this.add(name, category_id, barcode, price, description, image_url, quantity, stock, measure_id, family_id,variant_List)
+      }
+
+      /*
+      if(variant_list.length){
+
+      }
       await prisma.item.update({
         where: {
           id: item_id
@@ -147,6 +178,20 @@ async add(name, barcode, price, description, image_url, quantity, stock, measure
         data: itemData
       })
     return {message: 'updated'}
+      */
+      
+    },
+
+    async update(item_id,name, category_id, barcode, price, description, image_url, quantity, stock, measure_id, family_id,variant_List){
+      const itemData= {name, category_id, barcode, price, description, image_url, quantity, stock, measure_id}
+      await prisma.item.update({
+        where: {
+          id: item_id
+        },
+        data: itemData
+      })
+      return {message: 'updated'}
+
     },
 
   async delete(item_id) {
@@ -353,14 +398,57 @@ async add(name,parent_id){
 }
 
 const itemFamily={
-  async addCategory(family_id,category_id){
-    await prisma.itemFamily.update({where:{id:family_id},data:{ItemFamily_Category:{
-      connect:{id:category_id}
-    }}})
-  },
+  async addCategory(family_id, category_id) {
+  await prisma.itemFamily.update({
+    where: {
+      id: family_id
+    },
+    data: {
+      Category: {
+        connect: {
+          id: category_id
+        }
+      }
+    }
+  })
+},
+async removeCategory(family_id, category_id) {
+  await prisma.itemFamily.update({
+    where: {
+      id: family_id
+    },
+    data: {
+      Category: {
+        disconnect: {
+          id: category_id
+        }
+      }
+    }
+  })
+},
 
   async getAll(){
-    const itemFamilies= await prisma.itemFamily.findMany()
+    const itemFamilies= await prisma.itemFamily.findMany({
+      include:{
+        _count:{
+          select:{
+            Item:true
+          }
+        },
+        Item:{
+          select:{
+            id:true,
+            name:true,
+          }
+        },
+        Category:{
+          select:{
+            name:true,
+            id:true
+          }
+        }
+      }
+    })
     return itemFamilies
       
   },
@@ -377,7 +465,13 @@ const itemFamily={
               name:true,
               Variant:true
             }
+          },
+          Category:{
+          select:{
+            name:true,
+            id:true
           }
+        }
         
         }
       })

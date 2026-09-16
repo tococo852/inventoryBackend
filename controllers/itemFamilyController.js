@@ -12,6 +12,24 @@ const itemFamilyController = {
     const data=await itemFamily.getOne(id)
     res.json(data)
   },
+  async addCategory(req, res){
+    const {family_id}= req.params
+    const famId= checkId(family_id)
+
+    const {category_id} = req.body
+    await itemFamily.addCategory(famId,category_id)
+    res.json ({message:"family category added"})
+
+  },
+  async removeCategory(req, res){
+    const {family_id}= req.params
+    const famId= checkId(family_id)
+
+    const {category_id} = req.body
+
+    await itemFamily.removeCategory(famId,category_id)
+    res.json ({message:"family category removed"})
+  },
   async delete(req, res) {
     const { family_id } = req.params
     const id = checkId(family_id)

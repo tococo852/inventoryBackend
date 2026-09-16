@@ -9,4 +9,7 @@ itemsFamilyRouter.get('/',itemFamilyController.getAll)
 itemsFamilyRouter.get('/:family_id',itemFamilyController.getOne)
 itemsFamilyRouter.delete('/:family_id', itemFamilyController.delete)
 
+itemsFamilyRouter.put('/categories/:family_id', itemFamilyController.addCategory)
+itemsFamilyRouter.delete('/categories/:family_id', itemFamilyController.removeCategory)
+
 module.exports=itemsFamilyRouter

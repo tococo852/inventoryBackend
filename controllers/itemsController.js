@@ -22,12 +22,18 @@ const itemsController = {
   await items.add(name, barcode, price, description, image_url, quantity, stock, Number(measure_id),null,variant_list)
   res.json({ message: "Item added" })
     },
-  async update(req, res) {
+  async updateNewVariants(req, res) {
+    const { name, category_id, barcode, price, description, image_url, quantity, stock, measure_id,variant_list,family_id } = req.body
+    await items.updateNewVariants(name, category_id, barcode, price, description, image_url, quantity, stock, measure_id, family_id,variant_list)
+    res.json({ message: "Item updated" })
+    },
+    
+    async update(req, res) {
     const { item_id } = req.params
     const id = checkId(item_id)
-    const { name, category_id, barcode, price, description, image_url, quantity, stock, measure_id } = req.body
+    const { name, category_id, barcode, price, description, image_url, quantity, stock, measure_id,variant_list,family_id } = req.body
     const barcodeUpdate = !barcode ? EAN13BarcodeGen('223', category_id, item_id) : barcode
-    await items.update(id, name, category_id, barcodeUpdate, price, description, image_url, quantity, stock, measure_id)
+    await items.update(id, name, category_id, barcodeUpdate, price, description, image_url, quantity, stock, measure_id, family_id,variant_list)
     res.json({ message: "Item updated" })
     },
   async delete(req, res) {
