@@ -5,6 +5,7 @@ const auth = require( '../middleware/auth')
 
 variantGroupRouter.get('/', variantGroupController.getAll)
 variantGroupRouter.get('/:variantGroup_id', variantGroupController.getOne)
+variantGroupRouter.get('/family/:family_id', variantGroupController.getOneFamily)
 variantGroupRouter.post('/',auth, variantGroupController.add)
 variantGroupRouter.put('/:variantGroup_id', auth,variantGroupController.update)
 variantGroupRouter.delete('/:variantGroup_id', auth,variantGroupController.delete)

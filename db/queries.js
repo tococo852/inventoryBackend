@@ -26,8 +26,6 @@ const items = {
   /*expected shape: 
   //list of variant parents with the chosen variants
 "variant_list":[
-    //each member of the list is a parent, and inside it contains the chosen variants
-    //this case parent id 2, contains variant id1 and id3 as chosen to create 
     {"variant_parent":2,
     "variant_choices":[{
       "id":1, "name":"8x15"
@@ -35,9 +33,8 @@ const items = {
       {"id":3,
         "name":"10x20"
       }
-      ]
+      ] 
     },
-
     {
       "variant_parent":4,
       "variant_choices":[
@@ -74,10 +71,10 @@ const recList=( listoflist, c=0, currId=[], totalId=[])=>{
  
 
 
-async add(name, barcode, price, description, image_url, quantity, stock, measure_id, family_id=null, variant_list=null) {
+async add(name, barcode, price, description, image_url, quantity, stock, measure_id, family_id, variant_list) {
   if (!family_id) {
     const newFamily = await prisma.itemFamily.create({
-      data: { name: `${name} y Variaciones`, image_url }
+      data: { name: `${name}${variant_list?.length?' y Variaciones':''}`, image_url }
     });
 
     family_id = newFamily.id;
@@ -86,7 +83,7 @@ async add(name, barcode, price, description, image_url, quantity, stock, measure
   const itemData = { name, barcode, description, image_url, quantity, stock, measure_id, price, family_id};
 
   
-  if (variant_list) {
+  if (variant_list?.length) {
     const existingItems = await prisma.item.findMany({
       where: { family_id },
       include: { Variant: true }
@@ -131,7 +128,9 @@ async add(name, barcode, price, description, image_url, quantity, stock, measure
     return {
       message: `added ${newCombinations.length} variant(s), skipped ${combinations.length - newCombinations.length} already existing`
     };
-  } else {
+  } 
+  
+  else {
     await prisma.item.create({ data: itemData });
   }
 
@@ -347,6 +346,41 @@ const variantGroup={
     return variant_group
 
   },
+
+  async getInFamily (family_id){
+      const variantGroups = await prisma.variantGroup.findMany({
+    where: {
+      Variant: {
+        some: {
+          Item: {
+            some: {
+              family_id
+            }
+          }
+        }
+      }
+    },
+    select: {
+        id: true,
+        name: true,
+        Variant: {
+          where: {
+            Item: {
+              some: {
+                family_id
+              }
+            }
+          },
+          select: {
+            id: true,
+            name: true
+          }
+        }
+      }
+    })
+
+  return variantGroups
+  },
   async getAll (){
     const allGroups = await prisma.variantGroup.findMany({include:{Variant:true}})
     return allGroups
@@ -428,28 +462,49 @@ async removeCategory(family_id, category_id) {
 },
 
   async getAll(){
-    const itemFamilies= await prisma.itemFamily.findMany({
-      include:{
-        _count:{
-          select:{
-            Item:true
-          }
-        },
-        Item:{
-          select:{
-            id:true,
-            name:true,
-          }
-        },
-        Category:{
-          select:{
-            name:true,
-            id:true
+    const itemFamilies = await prisma.itemFamily.findMany({
+  include: {
+    _count: {
+      select: {
+        Item: true
+      }
+    },
+
+    Item: {
+      select: {
+        id: true,
+        name: true,
+        description:true,
+        image_url:true,
+        barcode:true,
+        price:true,
+        Variant: {
+          select: {
+            id: true,
+            name: true,
+            variant_group_id: true,
+
+            VariantGroup: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
           }
         }
       }
-    })
-    return itemFamilies
+    },
+
+    Category: {
+      select: {
+        id: true,
+        name: true
+      }
+    }
+  }
+})
+
+return itemFamilies
       
   },
   async getOne(family_id){

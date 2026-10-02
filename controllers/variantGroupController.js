@@ -14,6 +14,12 @@ const variantGroupController = {
     
 
   },
+  async getOneFamily (req,res){
+    const {family_id}= req.params
+    const id = checkId(family_id)
+    const data = await variantGroup.getInFamily(id)
+    res.json(data)
+  },
   async update(req, res) {
     const { variantGroup_id } = req.params
     const { name } = req.body

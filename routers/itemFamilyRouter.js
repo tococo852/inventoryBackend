@@ -7,9 +7,9 @@ const cloudinaryUpload= require('../middleware/cloudinaryUpload')
 
 itemsFamilyRouter.get('/',itemFamilyController.getAll)
 itemsFamilyRouter.get('/:family_id',itemFamilyController.getOne)
-itemsFamilyRouter.delete('/:family_id', itemFamilyController.delete)
+itemsFamilyRouter.delete('/:family_id', auth, itemFamilyController.delete)
 
-itemsFamilyRouter.put('/categories/:family_id', itemFamilyController.addCategory)
-itemsFamilyRouter.delete('/categories/:family_id', itemFamilyController.removeCategory)
+itemsFamilyRouter.put('/categories/:family_id',auth,  itemFamilyController.addCategory)
+itemsFamilyRouter.delete('/categories/:family_id',auth, itemFamilyController.removeCategory)
 
 module.exports=itemsFamilyRouter
