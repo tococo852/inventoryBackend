@@ -71,73 +71,61 @@ const recList=( listoflist, c=0, currId=[], totalId=[])=>{
  
 
 
-async add(name, barcode, price, description, image_url, quantity, stock, measure_id, family_id, variant_list) {
-  if (!family_id) {
-    const newFamily = await prisma.itemFamily.create({
-      data: { name: `${name}${variant_list?.length?' y Variaciones':''}`, image_url }
-    });
-
-    family_id = newFamily.id;
-  }
-
-  const itemData = { name, barcode, description, image_url, quantity, stock, measure_id, price, family_id};
-
+async add(name, description, image_url, measure_id, variant_list, Category, barcode = null) {
   
-  if (variant_list?.length) {
-    const existingItems = await prisma.item.findMany({
-      where: { family_id },
-      include: { Variant: true }
-    });
+  // 1. Create the ItemFamily (and handle Categories if your schema supports it, e.g., connect/create)
+  const newFamily = await prisma.itemFamily.create({
+    data: { 
+      name: `${name}${variant_list?.length ? ' y Variaciones' : ''}`, 
+      image_url,
+      // If Category is an array of IDs or objects, link them here based on your Prisma schema:
+      Category: { connect: Category.map(cat => ({ id: cat.id })) } 
+    }
+  });
 
-    const existingSignatures = new Set(
-      existingItems.map(item =>
-        item.Variant.map(v => v.id).sort().join('-')
-      )
-    );
-    const IDnames={}
+  const family_id = newFamily.id;
+  const itemData = { name, barcode, image_url, measure_id, family_id, description };
+
+  // 2. If variants exist, create combinations
+  if (variant_list && variant_list.length > 0) {
+    const IDnames = {};
     const listOfLists = variant_list.map(varGroup => 
-      varGroup.variant_choices.map(varChoice=> 
-        {
-          IDnames[varChoice.id]=varChoice.name
-          return varChoice.id
-        }));
+      varGroup.Variant.map(varChoice => {
+        IDnames[varChoice.id] = varChoice.name;
+        return varChoice.id;
+      })
+    );
+    
     const combinations = cartesianProduct(listOfLists);
 
-    const newCombinations = combinations.filter(combi => {
-      const signature = [...combi].sort().join('-');
-      return !existingSignatures.has(signature);
-    });
-
-
-
+    // Create an item representative for each variant combination
     await Promise.all(
-      newCombinations.map(combi =>{
-          
-          return prisma.item.create({
+      combinations.map(combi => {
+        return prisma.item.create({
           data: {
             ...itemData,
-              name:`${itemData.name}${combi.reduce((extraNames, id)=>extraNames+` ${IDnames[id]}`,'')}`,
-              Variant: {
+            name: `${itemData.name}${combi.reduce((extraNames, id) => extraNames + ` ${IDnames[id]}`, '')}`,
+            Variant: {
               connect: combi.map(variant_id => ({ id: variant_id }))
             }
           }
-        })}
-      )
+        });
+      })
     );
 
     return {
-      message: `added ${newCombinations.length} variant(s), skipped ${combinations.length - newCombinations.length} already existing`
+      message: `Successfully added ${combinations.length} variant item(s).`
     };
   } 
   
+  // 3. If NO variants exist, create just 1 item
   else {
     await prisma.item.create({ data: itemData });
+    return { message: 'Successfully added 1 item.' };
   }
-
-  return { message: 'added' };
 },
 
-    async updateNewVariants(name, category_id, barcode, price, description, image_url, quantity, stock, measure_id, family_id,variant_List) {
+    async updateFamily(name, category_id, barcode, price, description, image_url, quantity, stock, measure_id, family_id,variant_List) {
       //const itemData= { name, category_id, barcode, price, description, image_url, quantity, stock, measure_id, family_id}
 
       const variantGroups = await prisma.variant.findMany({

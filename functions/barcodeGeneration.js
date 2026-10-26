@@ -26,8 +26,8 @@ const generateEanCheckDigit = (barcode) => {
   return String(remainder === 0 ? 0 : 10 - remainder);
 };
 
-const EAN13BarcodeGen =(prefix,category_id,item_id)=>{
-    const categoryNumber= digitGenerator(4,category_id ? category_id : 0)
+const EAN13BarcodeGen =(prefix,family_id,item_id)=>{
+    const categoryNumber= digitGenerator(4,family_id ? family_id : 0)
     const itemNumber = digitGenerator(5, item_id)
     const noCheckNumber = prefix+categoryNumber+itemNumber
     const checkDigit= generateEanCheckDigit(noCheckNumber)

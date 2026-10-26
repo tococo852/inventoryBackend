@@ -15,16 +15,32 @@ const itemsController = {
     const data = await items.getOne(id)
     res.json(data)
   },
+
+
+  /*
+  
+Category =
+'[{"id":1,"name":"bolsa"},{"id":4,"name":"plumavit"}]'
+image_url =
+''
+name =
+'Nuevo item y variantes'
+variant_list =
+
+  
+
+  */
   async add(req, res) {
     console.log('request arrived')
-  const { name, barcode, price, description, image_url, quantity, stock, measure_id,variant_list } = req.body
-  
-  await items.add(name, barcode, price, description, image_url, quantity, stock, Number(measure_id),null,variant_list)
-  res.json({ message: "Item added" })
+    const { name, image_url, measure_id,variant_list, Category, description} = req.body
+    await items.add(name, description, image_url, Number(measure_id),JSON.parse(variant_list), JSON.parse(Category))
+    res.json({ message: "Item added" })
     },
-  async updateNewVariants(req, res) {
-    const { name, category_id, barcode, price, description, image_url, quantity, stock, measure_id,variant_list,family_id } = req.body
-    await items.updateNewVariants(name, category_id, barcode, price, description, image_url, quantity, stock, measure_id, family_id,variant_list)
+  async updateFamily(req, res) {
+    const {id}= req.params
+    const family_id = checkId(id)
+    const { name, category_id, barcode, price, description, image_url, quantity, stock, measure_id,variant_list } = req.body
+    await items.updateFamily(name, category_id, barcode, price, description, image_url, quantity, stock, measure_id, family_id,variant_list)
     res.json({ message: "Item updated" })
     },
     
